@@ -565,7 +565,7 @@ None
 </section>
 <section id="memahami-data">
 <h3>Memahami Data<a class="headerlink" href="#memahami-data" title="Link to this heading">#</a></h3>
-<p>Datasets Liver Disoeders adalah data yang diambil dari UCI datasets, Liver Disoeders (Gangguan Hati) sendiri adalah kondisi medis yang mempengaruhi fungsi hati. Hati adalah organ vital yang bertanggung jawab atas berbagai fungsi penting dalam tubuh, termasuk detoksifikasi darah, produksi protein penting, metabolisme lemak, dan penyimpanan glikogen. Gangguan hati dapat disebabkan oleh berbagai faktor, seperti infeksi, konsumsi alkohol berlebihan, obat-obatan, dan penyakit genetik. Pada data kali ini tentang liver disoerders memiliki 7 fitur, 5 fitur yaitu mcv, alkphos, sgpt, sgot, gammagt yang menentukan darah itu ada penyakit atau tidak, sedangkan 2 fitur  drinks dan selector adalah mentukan jumlah alkohol yang diminum dan digunakan untuk pemisahan data latih/uji. Jumlah data yang ada dalam datasets liver disoerders sebanyak 345 dan tidak memiliki missing value. Memiliki data Outlier sebanyak 35 data.<a class="reference external" href="https://iqbil.pythonanywhere.com/">https://iqbil.pythonanywhere.com/</a></p>
+<p>Datasets Liver Disoeders adalah data yang diambil dari UCI datasets, Liver Disoeders (Gangguan Hati) sendiri adalah kondisi medis yang mempengaruhi fungsi hati. Hati adalah organ vital yang bertanggung jawab atas berbagai fungsi penting dalam tubuh, termasuk detoksifikasi darah, produksi protein penting, metabolisme lemak, dan penyimpanan glikogen. Gangguan hati dapat disebabkan oleh berbagai faktor, seperti infeksi, konsumsi alkohol berlebihan, obat-obatan, dan penyakit genetik. Pada data kali ini tentang liver disoerders memiliki 7 fitur, 5 fitur yaitu mcv, alkphos, sgpt, sgot, gammagt yang menentukan darah itu ada penyakit atau tidak, sedangkan 2 fitur  drinks dan selector adalah mentukan jumlah alkohol yang diminum dan digunakan untuk pemisahan data latih/uji. Jumlah data yang ada dalam datasets liver disoerders sebanyak 345 dan tidak memiliki missing value. Memiliki data Outlier sebanyak 7 data.</p>
 </section>
 <section id="pengertian-fitur">
 <h3>Pengertian Fitur<a class="headerlink" href="#pengertian-fitur" title="Link to this heading">#</a></h3>
@@ -756,24 +756,44 @@ dari hasil tersebut kita tidak perliu melakukan Proses imputasi data missing val
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">LocalOutlierFactor</span>
+
+<span class="c1"># Misalkan df_main adalah DataFrame yang digunakan</span>
 <span class="n">df_main_lof</span> <span class="o">=</span> <span class="n">df_main</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <span class="c1"># Menggunakan semua kolom fitur untuk deteksi outlier</span>
-<span class="n">columns_for_lof</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">columns_for_lof</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_main</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
 <span class="c1"># Inisialisasi model LOF</span>
 <span class="n">lof</span> <span class="o">=</span> <span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># Mendeteksi outlier</span>
-<span class="n">outlier_scores</span> <span class="o">=</span> <span class="n">lof</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">outlier_scores</span> <span class="o">=</span> <span class="n">lof</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">df_main</span><span class="p">[</span><span class="n">columns_for_lof</span><span class="p">])</span>
 <span class="n">df_main_lof</span><span class="p">[</span><span class="s1">&#39;LOF_Score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">lof</span><span class="o">.</span><span class="n">negative_outlier_factor_</span>
 
 <span class="c1"># Menampilkan DataFrame dengan skor LOF</span>
-<span class="n">df_main_lof</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_main_lof</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df_main_lof</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+<span class="c1"># Mengurutkan DataFrame berdasarkan skor LOF (semakin tinggi skor, semakin besar kemungkinan outlier)</span>
+<span class="n">df_main_lof_sorted</span> <span class="o">=</span> <span class="n">df_main_lof</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;LOF_Score&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Memilih maksimal 5 outlier dengan skor LOF tertinggi</span>
+<span class="n">top_outliers</span> <span class="o">=</span> <span class="n">df_main_lof_sorted</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Top 5 outliers:&quot;</span><span class="p">)</span>
+<span class="n">top_outliers</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_outliers</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   ID  mcv  alkphos  sgpt  sgot  gammagt  drinks  selector  LOF_Score
+0   0   85       92    45    27       31     0.0         1   1.464486
+1   1   85       64    59    32       23     0.0         2   1.322340
+2   2   86       54    33    16       54     0.0         2   1.692692
+3   3   91       78    34    24       36     0.0         2   1.553913
+4   4   87       70    12    28       10     0.0         2   1.197745
+Top 5 outliers:
+</pre></div>
+</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -805,140 +825,67 @@ dari hasil tersebut kita tidak perliu melakukan Proses imputasi data missing val
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>85</td>
-      <td>92</td>
-      <td>45</td>
-      <td>27</td>
-      <td>31</td>
-      <td>0.0</td>
-      <td>1</td>
-      <td>1.464580</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>85</td>
-      <td>64</td>
-      <td>59</td>
-      <td>32</td>
-      <td>23</td>
-      <td>0.0</td>
-      <td>2</td>
-      <td>1.322531</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>86</td>
-      <td>54</td>
-      <td>33</td>
-      <td>16</td>
-      <td>54</td>
-      <td>0.0</td>
-      <td>2</td>
-      <td>1.692587</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>91</td>
-      <td>78</td>
-      <td>34</td>
-      <td>24</td>
-      <td>36</td>
-      <td>0.0</td>
-      <td>2</td>
-      <td>1.553254</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>87</td>
-      <td>70</td>
-      <td>12</td>
-      <td>28</td>
-      <td>10</td>
-      <td>0.0</td>
-      <td>2</td>
-      <td>1.196458</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>340</th>
-      <td>340</td>
-      <td>99</td>
-      <td>75</td>
-      <td>26</td>
-      <td>24</td>
-      <td>41</td>
-      <td>12.0</td>
-      <td>1</td>
-      <td>1.014364</td>
-    </tr>
-    <tr>
-      <th>341</th>
-      <td>341</td>
-      <td>96</td>
-      <td>69</td>
-      <td>53</td>
-      <td>43</td>
-      <td>203</td>
-      <td>12.0</td>
-      <td>2</td>
-      <td>1.327028</td>
-    </tr>
-    <tr>
-      <th>342</th>
-      <td>342</td>
-      <td>98</td>
-      <td>77</td>
-      <td>55</td>
+      <th>35</th>
       <td>35</td>
-      <td>89</td>
-      <td>15.0</td>
-      <td>1</td>
-      <td>1.085503</td>
-    </tr>
-    <tr>
-      <th>343</th>
-      <td>343</td>
       <td>91</td>
+      <td>72</td>
+      <td>155</td>
       <td>68</td>
-      <td>27</td>
-      <td>26</td>
-      <td>14</td>
-      <td>16.0</td>
-      <td>1</td>
-      <td>1.038788</td>
+      <td>82</td>
+      <td>0.5</td>
+      <td>2</td>
+      <td>2.483046</td>
     </tr>
     <tr>
-      <th>344</th>
-      <td>344</td>
-      <td>98</td>
-      <td>99</td>
-      <td>57</td>
-      <td>45</td>
-      <td>65</td>
-      <td>20.0</td>
-      <td>1</td>
-      <td>1.265506</td>
+      <th>40</th>
+      <td>40</td>
+      <td>84</td>
+      <td>92</td>
+      <td>68</td>
+      <td>37</td>
+      <td>44</td>
+      <td>0.5</td>
+      <td>2</td>
+      <td>1.879551</td>
+    </tr>
+    <tr>
+      <th>84</th>
+      <td>84</td>
+      <td>92</td>
+      <td>60</td>
+      <td>30</td>
+      <td>27</td>
+      <td>297</td>
+      <td>2.0</td>
+      <td>2</td>
+      <td>1.874117</td>
+    </tr>
+    <tr>
+      <th>122</th>
+      <td>122</td>
+      <td>90</td>
+      <td>134</td>
+      <td>14</td>
+      <td>20</td>
+      <td>14</td>
+      <td>4.0</td>
+      <td>2</td>
+      <td>1.855205</td>
+    </tr>
+    <tr>
+      <th>110</th>
+      <td>110</td>
+      <td>87</td>
+      <td>76</td>
+      <td>22</td>
+      <td>55</td>
+      <td>9</td>
+      <td>4.0</td>
+      <td>2</td>
+      <td>1.786149</td>
     </tr>
   </tbody>
 </table>
-<p>345 rows × 9 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -956,8 +903,8 @@ dari hasil tersebut kita tidak perliu melakukan Proses imputasi data missing val
 <span class="c1"># Memilih fitur numerik untuk deteksi outlier</span>
 <span class="n">numeric_features</span> <span class="o">=</span> <span class="n">df_liver</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span>
 
-<span class="c1"># Menginisialisasi model LOF</span>
-<span class="n">lof</span> <span class="o">=</span> <span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">contamination</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="c1"># Menginisialisasi model LOF dengan nilai contamination yang lebih rendah</span>
+<span class="n">lof</span> <span class="o">=</span> <span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">contamination</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>  <span class="c1"># Menurunkan nilai contamination</span>
 
 <span class="c1"># Mendeteksi outlier</span>
 <span class="n">outlier_scores</span> <span class="o">=</span> <span class="n">lof</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">)</span>
@@ -967,8 +914,10 @@ dari hasil tersebut kita tidak perliu melakukan Proses imputasi data missing val
 <span class="n">num_outliers</span> <span class="o">=</span> <span class="p">(</span><span class="n">outlier_scores</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jumlah outlier yang terdeteksi:&quot;</span><span class="p">,</span> <span class="n">num_outliers</span><span class="p">)</span>
 
-<span class="c1"># Mendeteksi outlier per fitur</span>
+<span class="c1"># Mendeteksi outlier per fitur dengan nilai contamination yang lebih rendah</span>
 <span class="n">outlier_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">lof</span> <span class="o">=</span> <span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">contamination</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>  <span class="c1"># Menggunakan nilai contamination yang sama</span>
+
 <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">numeric_features</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
     <span class="n">outlier_scores</span> <span class="o">=</span> <span class="n">lof</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">[[</span><span class="n">feature</span><span class="p">]])</span>
     <span class="n">outlier_dict</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">outlier_scores</span>
@@ -997,55 +946,27 @@ dari hasil tersebut kita tidak perliu melakukan Proses imputasi data missing val
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jumlah outlier yang terdeteksi: 35
-Jumlah outlier untuk fitur &#39;mcv&#39;: 16
-Jumlah outlier untuk fitur &#39;alkphos&#39;: 34
-Jumlah outlier untuk fitur &#39;sgpt&#39;: 34
-Jumlah outlier untuk fitur &#39;sgot&#39;: 34
-Jumlah outlier untuk fitur &#39;gammagt&#39;: 35
-Jumlah outlier untuk fitur &#39;drinks&#39;: 11
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jumlah outlier yang terdeteksi: 7
+Jumlah outlier untuk fitur &#39;mcv&#39;: 5
+Jumlah outlier untuk fitur &#39;alkphos&#39;: 4
+Jumlah outlier untuk fitur &#39;sgpt&#39;: 7
+Jumlah outlier untuk fitur &#39;sgot&#39;: 5
+Jumlah outlier untuk fitur &#39;gammagt&#39;: 6
+Jumlah outlier untuk fitur &#39;drinks&#39;: 6
 Jumlah outlier untuk fitur &#39;selector&#39;: 0
-Jumlah outlier untuk fitur &#39;LOF_Score&#39;: 35
+Jumlah outlier untuk fitur &#39;LOF_Score&#39;: 7
 </pre></div>
 </div>
-<img alt="_images/ab5809cf2cdaf9f83dd4478669471ffce6a471ed1c0dcbbd72a22131ab03d05d.png" src="_images/ab5809cf2cdaf9f83dd4478669471ffce6a471ed1c0dcbbd72a22131ab03d05d.png" />
+<img alt="_images/b23ca1e9f757fb76d2df4e78ee3557ffe05ff9284befaa88ce686ee83c010ab8.png" src="_images/b23ca1e9f757fb76d2df4e78ee3557ffe05ff9284befaa88ce686ee83c010ab8.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data outlier:
      mcv  alkphos  sgpt  sgot  gammagt  drinks  selector  LOF_Score  outlier
-1     85       64    59    32       23     0.0         2   1.322531       -1
-4     87       70    12    28       10     0.0         2   1.196458       -1
-12    90       64    61    32       13     0.5         1   1.752137       -1
-21    93       23    35    20       20     0.5         1   1.530261       -1
-35    91       72   155    68       82     0.5         2   2.483228       -1
-37    79       39    14    19        9     0.5         2   1.315679       -1
-40    84       92    68    37       44     0.5         2   1.879605       -1
-41    89       68    26    39       42     0.5         2   1.075025       -1
-62    91       55     4     8       13     0.5         2   1.178039       -1
-68   103       75    19    30       13     1.0         2   1.285203       -1
-82    91       99    42    33       16     2.0         2   1.636930       -1
-84    92       60    30    27      297     2.0         2   1.874167       -1
-105   89       35    27    29       17     4.0         1   1.165846       -1
-108   91       65    17     5        7     4.0         1   1.173701       -1
-110   87       76    22    55        9     4.0         2   1.787365       -1
-118   89       90    15    17       25     4.0         2   1.042701       -1
-120   96       55    48    39       42     4.0         2   1.432365       -1
-133   97       44   113    45      150     5.0         2   1.728878       -1
-157   92       87    57    25       44     6.0         2   1.090685       -1
-194   97       62    17    13        5     0.5         1   1.137023       -1
-203   86       79    37    28       14     0.5         1   1.036155       -1
-208   89       82    33    32       18     0.5         1   1.023543       -1
-211   78       69    24    18       31     0.5         1   1.096076       -1
-223   65       63    19    20       14     0.5         2   1.373802       -1
-242   86       54    26    30       13     0.5         2   1.043191       -1
-285   94      117    77    56       52     4.0         2   1.426153       -1
-289   91       63    17    17       46     4.0         2   1.062638       -1
-299   94       43   154    82      121     4.0         2   1.769400       -1
-314   95       36    38    19       15     6.0         1   1.089205       -1
-316   98       66   103    57      114     6.0         1   1.387180       -1
-324   91       57    33    23       12     8.0         1   0.987769       -1
-329   82       55    18    23       44     8.0         2   1.051746       -1
-334   91      138    45    21       48    10.0         1   1.300339       -1
-339   87       56    52    43       55    10.0         2   1.382996       -1
-343   91       68    27    26       14    16.0         1   1.038788       -1
+21    93       23    35    20       20     0.5         1   1.530219       -1
+35    91       72   155    68       82     0.5         2   2.483046       -1
+68   103       75    19    30       13     1.0         2   1.284888       -1
+84    92       60    30    27      297     2.0         2   1.874117       -1
+110   87       76    22    55        9     4.0         2   1.786149       -1
+223   65       63    19    20       14     0.5         2   1.373833       -1
+334   91      138    45    21       48    10.0         1   1.300384       -1
 </pre></div>
 </div>
 </div>
@@ -1086,7 +1007,7 @@ kosong. Kemudian tahap berikutnya adalah mendeteksi outlier dan terdapat sejumla
     <span class="n">outlier_indices</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">[</span><span class="n">scores</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
 <span class="c1"># Menghapus data outlier dari DataFrame sesuai dengan jumlah outlier yang diinginkan</span>
-<span class="n">outlier_indices_to_remove</span> <span class="o">=</span> <span class="n">outlier_indices</span><span class="p">[:</span><span class="mi">35</span><span class="p">]</span>
+<span class="n">outlier_indices_to_remove</span> <span class="o">=</span> <span class="n">outlier_indices</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span>
 <span class="n">df_liver_cleaned</span> <span class="o">=</span> <span class="n">df_liver</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">outlier_indices_to_remove</span><span class="p">)</span>
 
 <span class="n">df_liver_cleaned</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;liver_disorders_cleaned.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1100,19 +1021,19 @@ kosong. Kemudian tahap berikutnya adalah mendeteksi outlier dan terdapat sejumla
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>DataFrame setelah menghapus data outlier:
      mcv  alkphos  sgpt  sgot  gammagt  drinks  selector  LOF_Score  outlier
-0     85       92    45    27       31     0.0         1   1.464580        1
-1     85       64    59    32       23     0.0         2   1.322531       -1
-2     86       54    33    16       54     0.0         2   1.692587        1
-3     91       78    34    24       36     0.0         2   1.553254        1
-4     87       70    12    28       10     0.0         2   1.196458       -1
+0     85       92    45    27       31     0.0         1   1.464486        1
+1     85       64    59    32       23     0.0         2   1.322340        1
+2     86       54    33    16       54     0.0         2   1.692692        1
+3     91       78    34    24       36     0.0         2   1.553913        1
+4     87       70    12    28       10     0.0         2   1.197745        1
 ..   ...      ...   ...   ...      ...     ...       ...        ...      ...
-339   87       56    52    43       55    10.0         2   1.382996       -1
-341   96       69    53    43      203    12.0         2   1.327028        1
-342   98       77    55    35       89    15.0         1   1.085503        1
-343   91       68    27    26       14    16.0         1   1.038788       -1
-344   98       99    57    45       65    20.0         1   1.265506        1
+340   99       75    26    24       41    12.0         1   1.014327        1
+341   96       69    53    43      203    12.0         2   1.326926        1
+342   98       77    55    35       89    15.0         1   1.085512        1
+343   91       68    27    26       14    16.0         1   1.038744        1
+344   98       99    57    45       65    20.0         1   1.265574        1
 
-[312 rows x 9 columns]
+[338 rows x 9 columns]
 </pre></div>
 </div>
 </div>
@@ -1171,19 +1092,19 @@ Sklearn Modelling Naives Bayes.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     mcv  alkphos  sgpt  sgot  gammagt  drinks  selector
-129   90       74    19    14       22     4.0         2
-234   83       68    17    20       71     0.5         2
-169   97       71    29    22       52     8.0         1
-229   86       58    36    27       59     0.5         2
-86    88       47    33    26       29     2.0         2
+7     88       67    21    11       11     0.5         1
+231   87       57    30    30       22     0.5         2
+149   91       63    25    26       15     6.0         1
+308   92       67    15    14       14     6.0         1
+304   93      102    47    23       37     5.0         2
 ..   ...      ...   ...   ...      ...     ...       ...
-213   89      115    17    27        7     0.5         1
-77    96       72    28    19       30     2.0         2
-124   88       93    29    27       31     4.0         2
-298   95       59    23    18       19     4.0         2
-117   85       60    17    21       14     4.0         2
+192   84       97    41    20       32     0.0         2
+73    90       73    34    21       22     2.0         1
+109   88      107    29    20       50     4.0         2
+277   85       58    83    49       51     3.0         2
+105   89       35    27    29       17     4.0         1
 
-[249 rows x 7 columns]
+[270 rows x 7 columns]
 </pre></div>
 </div>
 </div>
@@ -1198,19 +1119,19 @@ Sklearn Modelling Naives Bayes.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     mcv  alkphos  sgpt  sgot  gammagt  drinks  selector
-256   86       44    24    15       18     2.0         1
-9     90       60    25    19        5     0.5         1
-61    90       72    14    15       18     0.5         2
-64    87       71    32    19       27     1.0         1
-26    90       47    28    15       18     0.5         1
+113   88       80    24    25       17     4.0         2
+340   99       75    26    24       41    12.0         1
+189   94       83    81    34      201    20.0         1
+78    91       55     9    25       16     2.0         2
+216   91       84    11    12       10     0.5         1
 ..   ...      ...   ...   ...      ...     ...       ...
-221   90       79    18    15       24     0.5         2
-238   92       58    14    16       13     0.5         2
-253   93       59    41    30       48     1.0         2
-127   91       55    28    28       82     4.0         2
-132   86       78    47    39      107     5.0         2
+184   98       57    31    34       73    10.0         2
+75    90       80    19    14       42     2.0         1
+16    89       67    23    16       10     0.5         1
+68   103       75    19    30       13     1.0         2
+111   87       86    28    23       21     4.0         2
 
-[63 rows x 7 columns]
+[68 rows x 7 columns]
 </pre></div>
 </div>
 </div>
@@ -1233,7 +1154,7 @@ Sklearn Modelling Naives Bayes.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Akurasi: 47.62%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Akurasi: 63.24%
 </pre></div>
 </div>
 </div>
@@ -1288,10 +1209,8 @@ Sklearn Modelling Naives Bayes.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.8112449799196787
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Test: 0.6031746031746031
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.7851851851851852
+Accuracy Test: 0.6617647058823529
 </pre></div>
 </div>
 </div>
@@ -1372,8 +1291,8 @@ menghasilkan peningkatan performa dibandingkan model individual.</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.8112449799196787
-Accuracy Test: 0.6031746031746031
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.7851851851851852
+Accuracy Test: 0.6617647058823529
 Prediksi untuk data inputan baru: [2] Atau [1]
 </pre></div>
 </div>
@@ -1432,8 +1351,10 @@ Prediksi untuk data inputan baru: [2] Atau [1]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.7791164658634538
-Accuracy Test: 0.6666666666666666
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Train: 0.7851851851851852
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy Test: 0.7058823529411765
 Prediksi untuk data inputan baru: [2] Atau [1]
 </pre></div>
 </div>
@@ -1539,8 +1460,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
   <tbody>
     <tr>
       <th>0</th>
-      <td>1</td>
-      <td>1</td>
+      <td>0</td>
+      <td>0</td>
       <td>0</td>
     </tr>
     <tr>
@@ -1553,7 +1474,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>2</th>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1563,8 +1484,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
     </tr>
     <tr>
       <th>4</th>
-      <td>1</td>
-      <td>1</td>
+      <td>0</td>
+      <td>0</td>
       <td>0</td>
     </tr>
     <tr>
@@ -1574,38 +1495,38 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <td>...</td>
     </tr>
     <tr>
-      <th>244</th>
+      <th>265</th>
       <td>1</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>245</th>
+      <th>266</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>267</th>
       <td>1</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>246</th>
+      <th>268</th>
       <td>1</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>247</th>
-      <td>0</td>
-      <td>0</td>
+      <th>269</th>
       <td>1</td>
-    </tr>
-    <tr>
-      <th>248</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
+      <td>1</td>
     </tr>
   </tbody>
 </table>
-<p>249 rows × 3 columns</p>
+<p>270 rows × 3 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -1642,8 +1563,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
   <tbody>
     <tr>
       <th>0</th>
-      <td>2</td>
-      <td>2</td>
+      <td>1</td>
+      <td>1</td>
       <td>1</td>
     </tr>
     <tr>
@@ -1656,7 +1577,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>2</th>
       <td>2</td>
       <td>2</td>
-      <td>2</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1666,8 +1587,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
     </tr>
     <tr>
       <th>4</th>
-      <td>2</td>
-      <td>2</td>
+      <td>1</td>
+      <td>1</td>
       <td>1</td>
     </tr>
     <tr>
@@ -1677,38 +1598,38 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <td>...</td>
     </tr>
     <tr>
-      <th>244</th>
+      <th>265</th>
       <td>2</td>
       <td>2</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>245</th>
+      <th>266</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>267</th>
       <td>2</td>
       <td>2</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>246</th>
+      <th>268</th>
       <td>2</td>
       <td>2</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>247</th>
-      <td>1</td>
-      <td>1</td>
+      <th>269</th>
       <td>2</td>
-    </tr>
-    <tr>
-      <th>248</th>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
+      <td>2</td>
+      <td>2</td>
     </tr>
   </tbody>
 </table>
-<p>249 rows × 3 columns</p>
+<p>270 rows × 3 columns</p>
 </div></div></div>
 </div>
 <p>hasil test</p>
@@ -1748,7 +1669,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>0</th>
       <td>1</td>
       <td>1</td>
-      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1758,8 +1679,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
     </tr>
     <tr>
       <th>2</th>
-      <td>0</td>
-      <td>0</td>
+      <td>1</td>
+      <td>1</td>
       <td>0</td>
     </tr>
     <tr>
@@ -1772,7 +1693,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>4</th>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>...</th>
@@ -1781,38 +1702,38 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <td>...</td>
     </tr>
     <tr>
-      <th>58</th>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>59</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>60</th>
+      <th>63</th>
       <td>1</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>64</th>
       <td>1</td>
       <td>1</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>65</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>67</th>
       <td>0</td>
       <td>0</td>
       <td>1</td>
     </tr>
   </tbody>
 </table>
-<p>63 rows × 3 columns</p>
+<p>68 rows × 3 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -1851,7 +1772,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>0</th>
       <td>2</td>
       <td>2</td>
-      <td>1</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1861,8 +1782,8 @@ Prediksi untuk data inputan baru: [2] Atau [1]
     </tr>
     <tr>
       <th>2</th>
-      <td>1</td>
-      <td>1</td>
+      <td>2</td>
+      <td>2</td>
       <td>1</td>
     </tr>
     <tr>
@@ -1875,7 +1796,7 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <th>4</th>
       <td>2</td>
       <td>2</td>
-      <td>2</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>...</th>
@@ -1884,38 +1805,38 @@ Prediksi untuk data inputan baru: [2] Atau [1]
       <td>...</td>
     </tr>
     <tr>
-      <th>58</th>
-      <td>2</td>
-      <td>2</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>59</th>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>60</th>
+      <th>63</th>
       <td>2</td>
       <td>2</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>61</th>
+      <th>64</th>
       <td>2</td>
       <td>2</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>62</th>
+      <th>65</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>67</th>
       <td>1</td>
       <td>1</td>
       <td>2</td>
     </tr>
   </tbody>
 </table>
-<p>63 rows × 3 columns</p>
+<p>68 rows × 3 columns</p>
 </div></div></div>
 </div>
 </section>
@@ -2005,10 +1926,10 @@ kinerja model secara keseluruhan.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy of knn_p1: 0.6032
-Accuracy of knn_p2: 0.6667
-knn_p1: 0.6032
-knn_p2: 0.6667
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy of knn_p1: 0.6618
+Accuracy of knn_p2: 0.7059
+knn_p1: 0.6618
+knn_p2: 0.7059
 Prediction of knn_p1: 2
 Prediction of knn_p2: 2
 Class 1: 0 predictions
@@ -2017,15 +1938,15 @@ Class 2: 2 predictions
 Prediction for X_new: 2
 
 Overall Stacking Classifier Performance:
-Accuracy: 0.6508
+Accuracy: 0.7059
               precision    recall  f1-score   support
 
-           1       0.67      0.37      0.48        27
-           2       0.65      0.86      0.74        36
+           1       0.58      0.48      0.52        23
+           2       0.76      0.82      0.79        45
 
-    accuracy                           0.65        63
-   macro avg       0.66      0.62      0.61        63
-weighted avg       0.65      0.65      0.63        63
+    accuracy                           0.71        68
+   macro avg       0.67      0.65      0.66        68
+weighted avg       0.70      0.71      0.70        68
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\LENOVO\AppData\Local\Programs\Python\Python310\lib\site-packages\sklearn\base.py:493: UserWarning: X does not have valid feature names, but KNeighborsClassifier was fitted with feature names
@@ -2137,49 +2058,49 @@ berbeda satu sama lain. Berikut Ini Implementasinya.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction by estimator 1: 1
-Estimator 1 accuracy: 0.5079
-Prediction by estimator 2: 0
-Estimator 2 accuracy: 0.4762
-Prediction by estimator 3: 1
-Estimator 3 accuracy: 0.7143
-Prediction by estimator 4: 1
-Estimator 4 accuracy: 0.4762
-Prediction by estimator 5: 1
-Estimator 5 accuracy: 0.5873
+Estimator 1 accuracy: 0.5588
+Prediction by estimator 2: 1
+Estimator 2 accuracy: 0.6765
+Prediction by estimator 3: 0
+Estimator 3 accuracy: 0.6176
+Prediction by estimator 4: 0
+Estimator 4 accuracy: 0.3824
+Prediction by estimator 5: 0
+Estimator 5 accuracy: 0.3382
 Prediction by estimator 6: 1
-Estimator 6 accuracy: 0.6349
-Prediction by estimator 7: 1
-Estimator 7 accuracy: 0.6667
+Estimator 6 accuracy: 0.5441
+Prediction by estimator 7: 0
+Estimator 7 accuracy: 0.4559
 Prediction by estimator 8: 0
-Estimator 8 accuracy: 0.4921
+Estimator 8 accuracy: 0.3824
 Prediction by estimator 9: 1
-Estimator 9 accuracy: 0.5714
-Prediction by estimator 10: 1
-Estimator 10 accuracy: 0.6032
+Estimator 9 accuracy: 0.6765
+Prediction by estimator 10: 0
+Estimator 10 accuracy: 0.4265
 Prediction by estimator 11: 1
-Estimator 11 accuracy: 0.6032
+Estimator 11 accuracy: 0.4706
 Prediction by estimator 12: 1
-Estimator 12 accuracy: 0.5714
-Prediction by estimator 13: 0
-Estimator 13 accuracy: 0.5238
+Estimator 12 accuracy: 0.5441
+Prediction by estimator 13: 1
+Estimator 13 accuracy: 0.6324
 Prediction by estimator 14: 1
-Estimator 14 accuracy: 0.5079
+Estimator 14 accuracy: 0.5735
 Prediction by estimator 15: 0
-Estimator 15 accuracy: 0.5238
+Estimator 15 accuracy: 0.5147
 Prediction by estimator 16: 1
-Estimator 16 accuracy: 0.5238
+Estimator 16 accuracy: 0.6471
 Prediction by estimator 17: 1
-Estimator 17 accuracy: 0.5556
+Estimator 17 accuracy: 0.6471
 Prediction by estimator 18: 0
-Estimator 18 accuracy: 0.5238
+Estimator 18 accuracy: 0.5000
 Prediction by estimator 19: 1
-Estimator 19 accuracy: 0.4921
-Prediction by estimator 20: 0
-Estimator 20 accuracy: 0.5714
+Estimator 19 accuracy: 0.6029
+Prediction by estimator 20: 1
+Estimator 20 accuracy: 0.5588
 Majority vote prediction for new data: 2
-Jumlah prediksi kelas 1: 6
-Jumlah prediksi kelas 2: 14
-Average accuracy of all estimators: 0.5563
+Jumlah prediksi kelas 1: 8
+Jumlah prediksi kelas 2: 12
+Average accuracy of all estimators: 0.5375
 </pre></div>
 </div>
 </div>
@@ -2192,24 +2113,25 @@ Average accuracy of all estimators: 0.5563
 <p>Dari keempat model yang kami buat sebelumnya dapat dikatakan ada yang baik dan ada yang kurang baik, hal itu dapat dilihat dari akurasi yang didapat dari masing masing model yang sudah kita buktikan dengan hasil ada yang diatas 80% dan ada yang dibawah 80%
 hasilnya.</p>
 <ul class="simple">
-<li><p>single model dengan GNB : mendapatkan akurasi 52.38% atau 0.5238.</p></li>
+<li><p>single model dengan GNB : mendapatkan akurasi 63.24%
+atau 0.6324.</p></li>
 </ul>
 <ul class="simple">
-<li><p>K-Nearest Neighbors (KNN) : mendapatkan akurasi 61.90% atau 0.6190.</p></li>
+<li><p>K-Nearest Neighbors (KNN) : mendapatkan akurasi 66.17% atau 0.6617.</p></li>
 </ul>
 <ul class="simple">
-<li><p>stacking dengan KNN (model dasar) dan GNB (model meta) : mendapatkan akurasi 61.90% atau 0.6190.</p></li>
+<li><p>stacking dengan KNN (model dasar) dan GNB (model meta) : mendapatkan akurasi 70.59% atau 0.7059.</p></li>
 </ul>
 <ul class="simple">
-<li><p>bagging dengan GNB : mendapatkan akurasi 53.17% atau 0.5317.</p></li>
+<li><p>bagging dengan GNB : mendapatkan akurasi 53.75% atau 0.5375.</p></li>
 </ul>
-<p>dari keempat model diatas dapat dilihat bahwa model terbaik adalah K-Nearest Neighbors (KNN) karena mendapatkan akurasi tertinggi
-dari ketiga model yang telah dibuat yakni 61.90% atau 0.6190. Jadi langkah selanjutnya kita pakai model terbaik tersebut untuk
+<p>dari keempat model diatas dapat dilihat bahwa model terbaik adalah stacking karena mendapatkan akurasi tertinggi
+dari ketiga model yang telah dibuat yakni 70.59% atau 0.7059. Jadi langkah selanjutnya kita pakai model terbaik tersebut untuk
 implementasinya.</p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="deployment-implementasi-model">
 <h1>Deployment Implementasi Model<a class="headerlink" href="#deployment-implementasi-model" title="Link to this heading">#</a></h1>
-<p>Pada tahap ini kita akan membuat implementasi Model K-Nearest Neighbors (KNN)  sebagai model untuk menentukan klasifikasi untuk
+<p>Pada tahap ini kita akan membuat implementasi Model stacking  sebagai model untuk menentukan klasifikasi untuk
 menentukan apakah pasien mengalami gangguan hati atau tidak mengalami gangguan hati.</p>
 <p>Dalam Implementasi yang kita buat kita menggunakan Python Flask yang tentunya membutuhkan library flask untuk
 menjalankannya.</p>
